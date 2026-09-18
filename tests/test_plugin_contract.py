@@ -24,6 +24,7 @@ class PluginContractTests(unittest.TestCase):
         self.assertNotIn("Component.onCompleted", sources)
         self.assertNotIn("installHook", sources)
         self.assertIn('["python3", root.companionPath, action]', sources)
+        self.assertIn("switchPanelFrom(root.barIdentity, direction)", sources)
         for action in ("setup", "repair", "refresh", "remove"):
             self.assertIn(f'root.runAction("{action}")', sources)
 

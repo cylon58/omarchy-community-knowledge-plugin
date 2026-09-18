@@ -88,6 +88,18 @@ class CompanionTests(unittest.TestCase):
         self.assertIn("manual", result["action_required"].lower())
         self.assertFalse(result["installed"])
 
+    def test_antigravity_cli_is_a_distinct_supported_target(self):
+        runner = FakeRunner([self.completed([], stdout="agy\n")])
+
+        result = self.module.perform(
+            "status", plugin_root=self.plugin, home=self.home, runner=runner,
+        )
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["agent"], "agy")
+        self.assertTrue(result["agent_supported"])
+        self.assertFalse(result["installed"])
+
     def test_setup_and_repair_use_fixed_bundled_argv(self):
         for action, suffix in (("setup", []), ("repair", ["--repair"])):
             with self.subTest(action=action):
@@ -101,6 +113,17 @@ class CompanionTests(unittest.TestCase):
                     "--agent", "auto", *suffix,
                 ])
 
+    def test_setup_and_repair_allow_the_helpers_bounded_command_sequence(self):
+        for action in ("setup", "repair"):
+            with self.subTest(action=action):
+                runner = FakeRunner([self.completed([], stdout="complete\n")])
+
+                self.module.perform(
+                    action, plugin_root=self.plugin, home=self.home, runner=runner,
+                )
+
+                self.assertEqual(runner.calls[0][1], 1800)
+
     def test_remove_does_not_pass_wheel(self):
         runner = FakeRunner([self.completed([], stdout="Removal result: removed\n")])
 
@@ -110,8 +133,9 @@ class CompanionTests(unittest.TestCase):
 
         self.assertTrue(result["ok"])
         self.assertEqual(runner.calls[0][0], [
-            "python3", str(self.script), "--agent", "auto", "--remove",
+            "python3", str(self.script), "--agent", "codex", "--remove",
         ])
+        self.assertEqual(runner.calls[0][1], 1800)
 
     def test_refresh_uses_installed_launcher_and_sync_only(self):
         launcher = self.home / ".local/bin/omarchy-knowledge"

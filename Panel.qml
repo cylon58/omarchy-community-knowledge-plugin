@@ -30,6 +30,12 @@ Panel {
   function close() { root.controller.hide() }
   function toggle() { root.opened ? root.close() : root.open() }
 
+  function switchPanel(direction) {
+    if (root.bar && typeof root.bar.switchPanelFrom === "function")
+      return root.bar.switchPanelFrom(root.barIdentity, direction)
+    return false
+  }
+
   function runAction(action) {
     if (root.busy) return
     root.busy = true
@@ -58,7 +64,8 @@ Panel {
       if (value.action === "status") {
         if (!value.installed) return "Ready to set up for " + (value.agent || "your agent") + "."
         var age = value.cache_age_seconds === null ? "No accepted snapshot yet" : "Cache age: " + Math.floor(value.cache_age_seconds / 3600) + "h"
-        return "Installed for " + value.agent + ". " + age + ". " + String(value.count || 0) + " community records."
+        return "Companion installed. Current agent: " + value.agent + ". " + age + ". "
+          + String(value.count || 0) + " community records. Choose Update / Repair to connect a newly selected supported agent."
       }
       return value.message || "Action complete."
     } catch (error) {
@@ -137,7 +144,7 @@ Panel {
           width: parent.width
           wrapMode: Text.Wrap
           textFormat: Text.PlainText
-          text: "Setup creates an isolated environment under ~/.local/share, a launcher under ~/.local/bin, two links in the detected agent’s skill folder, and accepted data under ~/.cache. Sharing anything publicly always requires a separate preview and your approval."
+          text: "Setup creates an isolated environment under ~/.local/share, a launcher under ~/.local/bin, two links in the detected agent’s skill folder, and accepted data under ~/.cache. It uses pip with your configured package index and attempts an initial public GitHub sync. Sharing anything publicly always requires a separate preview and your approval."
           color: Qt.darker(root.bar ? root.bar.foreground : Color.foreground, 1.35)
           font.family: root.bar ? root.bar.fontFamily : Style.font.family
           font.pixelSize: Style.font.bodySmall

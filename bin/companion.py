@@ -12,7 +12,7 @@ import tempfile
 
 
 ACTIONS = {"status", "setup", "repair", "refresh", "remove"}
-SUPPORTED_AGENTS = {"codex", "claude", "opencode", "gemini"}
+SUPPORTED_AGENTS = {"codex", "claude", "opencode", "gemini", "agy"}
 WHEEL_NAME = "omarchy_community_knowledge_tools-0.3.0-py3-none-any.whl"
 SETUP_NAME = "omarchy-knowledge-setup.py"
 OUTPUT_LIMIT = 16 * 1024
@@ -135,8 +135,14 @@ def perform(action, *, plugin_root=None, home=None, runner=run_process, now=None
             if action == "repair":
                 argv.append("--repair")
         else:
-            argv.extend(["--agent", "auto", "--remove"])
-        timeout = 190
+            # Removal follows the ownership receipt, not the selected agent.
+            # An explicit supported selector avoids failing if the user's
+            # default changed or disappeared after installation.
+            argv.extend(["--agent", "codex", "--remove"])
+        # The helper gives each subprocess its own 180-second deadline. Setup,
+        # repair, and rollback can legitimately execute several in sequence;
+        # this outer guard must not interrupt the helper before it can clean up.
+        timeout = 1800
 
     completed = _run(argv, timeout=timeout, runner=runner)
     if completed.returncode != 0:
