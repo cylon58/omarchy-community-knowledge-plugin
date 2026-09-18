@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.cylon58.omarchy-knowledge",
+  "name": "Community Knowledge",
+  "version": "0.1.0",
+  "author": "cylon58",
+  "description": "Connect your agent to reviewed Omarchy community fixes and improvements",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Community Knowledge",
+    "description": "Setup, refresh, repair, or remove the local agent companion",
+    "category": "System",
+    "allowMultiple": false
+  }
+}

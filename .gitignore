@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+vendor/*.whl
+vendor/omarchy-knowledge-setup.py
+release/
