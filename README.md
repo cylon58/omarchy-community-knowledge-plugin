@@ -36,7 +36,7 @@ Install a reviewed release with Omarchy's normal plugin command:
 omarchy plugin add https://github.com/cylon58/omarchy-community-knowledge-plugin.git --enable
 ```
 
-Open the bar panel and choose **Setup**. This explicitly runs the bundled,
+Open the bar panel and choose **Connect my agent**. This explicitly runs the bundled,
 reviewable setup program. It creates an isolated environment under
 `~/.local/share/omarchy-knowledge-next`, an owned launcher at
 `~/.local/bin/omarchy-knowledge`, agent skill links and their ownership receipt,
@@ -58,7 +58,7 @@ sync of the public community repository. A package-index or GitHub outage is
 reported; a failed initial sync does not turn into a background retry service.
 
 Update the plugin with `omarchy plugin update io.github.cylon58.omarchy-knowledge`,
-then choose **Repair** to apply its newly bundled companion. **Refresh** runs an
+then choose **Update agent** to apply its newly bundled companion. **Refresh data** runs an
 explicit public-data sync; there is no timer or background service. A failed
 refresh leaves the prior accepted snapshot usable and reports the error.
 
@@ -100,7 +100,7 @@ them.
 
 Removal is deliberately two-step:
 
-1. Open the panel and choose **Remove**. This removes only companion paths
+1. Open the panel and choose **Disconnect**. This removes only companion paths
    recorded as owned by setup, including its agent skill links.
 2. Then run
    `omarchy plugin remove io.github.cylon58.omarchy-knowledge`.

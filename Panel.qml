@@ -15,6 +15,9 @@ Panel {
   readonly property var barIdentity: hostWidget || root
   readonly property string companionPath: decodeURIComponent(String(Qt.resolvedUrl("bin/companion.py")).replace(/^file:\/\//, ""))
   property bool busy: false
+  property bool isInstalled: false
+  property bool statusKnown: false
+  property bool actionFailed: false
   property string activeAction: ""
   property string outputText: "Open the panel to check setup status."
   property string pendingOutput: ""
@@ -39,6 +42,7 @@ Panel {
   function runAction(action) {
     if (root.busy) return
     root.busy = true
+    root.actionFailed = false
     root.activeAction = action
     root.pendingOutput = ""
     root.processExited = false
@@ -54,22 +58,33 @@ Panel {
     root.busy = false
     if (root.pendingOutput !== "") root.outputText = root.summarize(root.pendingOutput)
     else if (root.processExitCode !== 0)
-      root.outputText = "The action failed without details. Try Repair or run the wrapper in a terminal."
+      root.outputText = "The action failed without details. Try Update agent."
   }
 
   function summarize(raw) {
     try {
       var value = JSON.parse(raw)
-      if (!value.ok) return value.error || value.action_required || "Action needs attention."
+      root.actionFailed = !value.ok
       if (value.action === "status") {
-        if (!value.installed) return "Ready to set up for " + (value.agent || "your agent") + "."
-        var age = value.cache_age_seconds === null ? "No accepted snapshot yet" : "Cache age: " + Math.floor(value.cache_age_seconds / 3600) + "h"
-        return "Companion installed. Current agent: " + value.agent + ". " + age + ". "
-          + String(value.count || 0) + " community records. Choose Update / Repair to connect a newly selected supported agent."
+        root.isInstalled = Boolean(value.installed)
+        root.statusKnown = true
       }
-      return value.message || "Action complete."
+      if (!value.ok) return value.display_message || (value.action === "status"
+        ? "Could not confirm the agent connection. Use Update agent to repair it, or check your selected agent in Omarchy settings."
+        : "The action could not finish. Try again or use Update agent to repair the connection.")
+      if (value.action === "status") {
+        if (!value.installed) return "Your agent is not connected yet. Choose Connect my agent to get started."
+        var age = value.cache_age_seconds === null ? "No shared data downloaded yet."
+          : "Shared data checked " + Math.floor(value.cache_age_seconds / 3600) + "h ago."
+        return "Connected for " + value.agent + ". " + String(value.count || 0)
+          + " community records. " + age
+      }
+      if (value.action === "setup" || value.action === "repair") root.isInstalled = true
+      if (value.action === "remove") root.isInstalled = false
+
+      return String(value.display_message || value.message || "Action complete.").slice(0, 480)
     } catch (error) {
-      return "The companion returned unreadable output. Try Repair."
+      return "The companion returned unreadable output. Try Update agent."
     }
   }
 
@@ -116,8 +131,8 @@ Panel {
 
         PanelHero {
           title: "Community Knowledge"
-          meta: root.busy ? root.activeAction + " running" : "local agent companion"
-          detail: root.busy ? "BUSY" : "READY"
+          meta: root.busy ? "working…" : "fixes, workarounds and plugins"
+          detail: root.busy ? "BUSY" : (root.actionFailed ? "CHECK" : (root.isInstalled ? "CONNECTED" : "SETUP"))
           foreground: root.bar ? root.bar.foreground : Color.foreground
           iconComponent: Component {
             Text {
@@ -134,7 +149,7 @@ Panel {
           width: parent.width
           wrapMode: Text.Wrap
           textFormat: Text.PlainText
-          text: root.outputText
+          text: "Help your agent find shared Omarchy hardware and system fixes, workarounds, and existing plugins."
           color: root.bar ? root.bar.foreground : Color.foreground
           font.family: root.bar ? root.bar.fontFamily : Style.font.family
           font.pixelSize: Style.font.body
@@ -144,25 +159,38 @@ Panel {
           width: parent.width
           wrapMode: Text.Wrap
           textFormat: Text.PlainText
-          text: "Setup connects your agent to shared hardware and system fixes and creates a local plugin search index. Plugin searches check the marketplace for updates; offline use keeps the last good list. Refresh updates both community knowledge and plugins. Sharing anything publicly always requires a separate preview and your approval."
-          color: Qt.darker(root.bar ? root.bar.foreground : Color.foreground, 1.35)
+          text: "Connect my agent installs two agent skills and downloads searchable community data. Sharing your experience always requires your approval."
+          color: root.bar ? root.bar.foreground : Color.foreground
           font.family: root.bar ? root.bar.fontFamily : Style.font.family
           font.pixelSize: Style.font.bodySmall
         }
 
-        Row {
+        Text {
+          width: parent.width
+          wrapMode: Text.Wrap
+          maximumLineCount: 6
+          elide: Text.ElideRight
+          textFormat: Text.PlainText
+          text: root.outputText
+          color: root.bar ? root.bar.foreground : Color.foreground
+          font.family: root.bar ? root.bar.fontFamily : Style.font.family
+          font.pixelSize: Style.font.body
+        }
+
+        Flow {
+          width: parent.width
           spacing: Style.space(8)
-          Button { text: "Setup"; bordered: true; enabled: !root.busy; onClicked: root.runAction("setup") }
-          Button { text: "Refresh"; bordered: true; enabled: !root.busy; onClicked: root.runAction("refresh") }
-          Button { text: "Update / Repair"; bordered: true; enabled: !root.busy; onClicked: root.runAction("repair") }
-          Button { text: "Remove"; bordered: true; enabled: !root.busy; onClicked: root.runAction("remove") }
+          Button { text: "Connect my agent"; visible: root.statusKnown && !root.isInstalled; bordered: true; enabled: !root.busy; onClicked: root.runAction("setup") }
+          Button { text: "Refresh data"; bordered: true; enabled: !root.busy && root.isInstalled; onClicked: root.runAction("refresh") }
+          Button { text: "Update agent"; bordered: true; enabled: !root.busy && root.isInstalled; onClicked: root.runAction("repair") }
+          Button { text: "Disconnect"; bordered: true; enabled: !root.busy && root.isInstalled; onClicked: root.runAction("remove") }
         }
 
         Text {
           width: parent.width
           wrapMode: Text.Wrap
           textFormat: Text.PlainText
-          text: "Remove the companion here before removing the plugin. Accepted cache and local drafts are kept."
+          text: "Refresh data updates fixes and the plugin list. Update agent installs newer skills or repairs setup. Disconnect keeps saved data and drafts."
           color: Qt.darker(root.bar ? root.bar.foreground : Color.foreground, 1.35)
           font.family: root.bar ? root.bar.fontFamily : Style.font.family
           font.pixelSize: Style.font.caption

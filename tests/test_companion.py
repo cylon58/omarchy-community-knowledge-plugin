@@ -140,7 +140,7 @@ class CompanionTests(unittest.TestCase):
     def test_refresh_updates_both_knowledge_and_plugins(self):
         launcher = self.home / ".local/bin/omarchy-knowledge"
         launcher.write_text("launcher", encoding="utf-8")
-        runner = FakeRunner([self.completed([], stdout='{"count": 4}\n')])
+        runner = FakeRunner([self.completed([], stdout=json.dumps({'knowledge': {'count': 4}, 'plugins': {'count': 10, 'state': 'refreshed', 'warnings': []}, 'errors': []}))])
 
         result = self.module.perform(
             "refresh", plugin_root=self.plugin, home=self.home, runner=runner,
@@ -148,6 +148,34 @@ class CompanionTests(unittest.TestCase):
 
         self.assertTrue(result["ok"])
         self.assertEqual(runner.calls[0][0], [str(launcher), "sync", "--plugins"])
+
+    def test_refresh_summarizes_large_catalog_instead_of_dumping_json(self):
+        launcher = self.home / ".local/bin/omarchy-knowledge"
+        launcher.write_text("launcher")
+        payload = {"knowledge": {"count": 57}, "plugins": {
+            "count": 3702, "state": "not-modified", "warnings": ["repo unavailable"] * 500},
+            "errors": []}
+        result = self.module.perform("refresh", plugin_root=self.plugin, home=self.home,
+            runner=FakeRunner([self.completed([], stdout=json.dumps(payload))]))
+        self.assertTrue(result["ok"])
+        self.assertIn("57", result["message"])
+        self.assertIn("3,702", result["message"])
+        self.assertIn("500", result["message"])
+        self.assertLess(len(result["message"]), 350)
+        self.assertNotIn("{", result["message"])
+
+    def test_partial_refresh_and_malformed_output_are_not_success(self):
+        launcher = self.home / ".local/bin/omarchy-knowledge"
+        launcher.write_text("launcher")
+        cases = [self.completed([], 1, json.dumps({"knowledge": {"count": 57},
+            "plugins": {"count": 3702, "state": "stale", "warnings": []},
+            "errors": ["network failed"]})), self.completed([], 0, "{broken")]
+        for completed in cases:
+            result = self.module.perform("refresh", plugin_root=self.plugin, home=self.home,
+                runner=FakeRunner([completed]))
+            self.assertFalse(result["ok"])
+            self.assertLess(len(result["display_message"]), 350)
+            self.assertNotIn("{", result["display_message"])
 
     def test_missing_bundle_and_failed_command_are_actionable(self):
         self.wheel.unlink()

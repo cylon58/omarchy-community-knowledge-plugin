@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "io.github.cylon58.omarchy-knowledge",
   "name": "Community Knowledge",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "cylon58",
   "description": "Connect your agent to community-reported Omarchy fixes and observations",
   "kinds": [
@@ -13,7 +13,7 @@
   },
   "barWidget": {
     "displayName": "Community Knowledge",
-    "description": "Setup, refresh, repair, or remove the local agent companion",
+    "description": "Connect your agent, refresh shared data, update skills, or disconnect",
     "category": "System",
     "allowMultiple": false
   }

@@ -145,12 +145,54 @@ def perform(action, *, plugin_root=None, home=None, runner=run_process, now=None
         timeout = 1800
 
     completed = _run(argv, timeout=timeout, runner=runner)
+    if action == "refresh":
+        return refresh_result(completed)
     if completed.returncode != 0:
         return {
             "ok": False, "action": action, "exit_code": completed.returncode,
             "error": completed.stderr.strip() or completed.stdout.strip() or f"{action.title()} failed",
         }
-    return {"ok": True, "action": action, "message": completed.stdout.strip() or f"{action.title()} complete"}
+    messages = {
+        "setup": "Your agent is connected. Start a new agent conversation to use the research and contribution skills.",
+        "repair": "Agent skills updated. Start a new agent conversation to use them.",
+        "remove": "Agent connection removed. Saved community data and your drafts were kept.",
+    }
+    message = messages[action]
+    if "pending" in completed.stdout.lower():
+        message += " Some data could not be refreshed. Try Refresh data when you are online."
+    return {"ok": True, "action": action, "message": message}
+
+
+def refresh_result(completed):
+    """Translate machine output into a bounded result suitable for a small popup."""
+    result = {"ok": False, "action": "refresh", "exit_code": completed.returncode}
+    try:
+        value = json.loads(completed.stdout)
+        knowledge, plugins, errors = value.get("knowledge", {}), value.get("plugins", {}), value["errors"]
+        if not isinstance(errors, list):
+            raise ValueError("Invalid error list")
+        counts = [knowledge.get("count"), plugins.get("count")]
+        if any(n is not None and (type(n) is not int or not 0 <= n <= 1_000_000) for n in counts):
+            raise ValueError("Invalid counts")
+        warnings = plugins.get("warnings", [])
+        if not isinstance(warnings, list):
+            raise ValueError("Invalid warnings")
+        if completed.returncode or errors or plugins.get("state") == "stale":
+            message = "Some data could not be refreshed. Previously saved data is still available, if present. Try Refresh data again when you are online."
+        elif None in counts or plugins.get("state") not in {"refreshed", "unchanged", "not-modified"}:
+            raise ValueError("Incomplete refresh result")
+        else:
+            result["ok"] = True
+            message = f"Up to date: {counts[0]:,} community records and {counts[1]:,} plugins."
+            if warnings:
+                message += f" The marketplace reports {len(warnings):,} listing warnings; these remain visible to your agent."
+        result["message"] = result["display_message"] = message
+    except (ValueError, TypeError, KeyError, AttributeError):
+        result["display_message"] = "Could not confirm the refresh result. Try Update agent, then Refresh data again."
+    if not result["ok"]:
+        result["error"] = result["display_message"]
+        result["diagnostics"] = (completed.stderr or completed.stdout)[:OUTPUT_LIMIT]
+    return result
 
 
 def main(argv=None, *, output=sys.stdout) -> int:
