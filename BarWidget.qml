@@ -46,7 +46,7 @@ BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
-    text: "󰋗"
+    text: "󰡉"
     slotSize: Style.bar.statusSlot
     tooltipText: "Community Knowledge"
     onPressed: function(mouseButton) {
