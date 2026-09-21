@@ -13,7 +13,7 @@ import tempfile
 
 ACTIONS = {"status", "setup", "repair", "refresh", "remove"}
 SUPPORTED_AGENTS = {"codex", "claude", "opencode", "gemini", "agy"}
-WHEEL_NAME = "omarchy_community_knowledge_tools-0.3.1-py3-none-any.whl"
+WHEEL_NAME = "omarchy_community_knowledge_tools-0.4.0-py3-none-any.whl"
 SETUP_NAME = "omarchy-knowledge-setup.py"
 OUTPUT_LIMIT = 16 * 1024
 
@@ -123,7 +123,7 @@ def perform(action, *, plugin_root=None, home=None, runner=run_process, now=None
     if action == "refresh":
         if not (launcher.is_file() or launcher.is_symlink()):
             return {"ok": False, "action": action, "error": "Companion is not installed; choose Setup first."}
-        argv, timeout = [str(launcher), "sync"], 130
+        argv, timeout = [str(launcher), "sync", "--plugins"], 180
     else:
         if not setup.is_file():
             return {"ok": False, "action": action, "error": "Release is missing the bundled setup script."}

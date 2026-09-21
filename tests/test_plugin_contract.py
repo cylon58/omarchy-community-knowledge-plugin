@@ -36,7 +36,7 @@ class PluginContractTests(unittest.TestCase):
         spec.loader.exec_module(module)
         with tempfile.TemporaryDirectory() as temporary:
             base = Path(temporary)
-            wheel = base / "omarchy_community_knowledge_tools-0.3.1-py3-none-any.whl"
+            wheel = base / "omarchy_community_knowledge_tools-0.4.0-py3-none-any.whl"
             setup = base / "setup_companion.py"
             destination = base / "export"
             wheel.write_bytes(b"reviewed-wheel")

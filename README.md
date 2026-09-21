@@ -8,16 +8,19 @@ consult community-reported fixes, observations, and optional improvements. It
 does not run a service, poll in the background, repair automatically, or share
 anything by itself.
 
-The bundled research skill checks installed plugins and the public marketplace
-before proposing a new plugin, suggests relevant existing options with links,
-and explains what a custom build would still need to provide.
+The bundled research skill checks installed plugins and a local marketplace index
+before proposing a new plugin, suggests relevant existing options with creator
+credit and repository links, and explains what a custom build would still need
+to provide. Each normal plugin search checks for catalog updates. Network failures
+keep the last good list with a warning; explicit offline search is supported.
+The Refresh action updates both community knowledge and the plugin index.
 
 ## Requirements
 
 - Omarchy Quattro
 - Python 3.11 or newer and Git
 - A published release containing `vendor/omarchy-knowledge-setup.py` and
-  `vendor/omarchy_community_knowledge_tools-0.3.1-py3-none-any.whl`
+  `vendor/omarchy_community_knowledge_tools-0.4.0-py3-none-any.whl`
 
 Codex, Claude Code, OpenCode, Gemini CLI, and Antigravity CLI (`agy`) are
 supported initially. Antigravity is a distinct target, not an alias for Gemini.
@@ -78,7 +81,7 @@ name it explicitly:
 
 ```sh
 python3 vendor/omarchy-knowledge-setup.py \
-  --wheel vendor/omarchy_community_knowledge_tools-0.3.1-py3-none-any.whl \
+  --wheel vendor/omarchy_community_knowledge_tools-0.4.0-py3-none-any.whl \
   --agent agy
 ```
 
@@ -120,13 +123,13 @@ conflict.
 
 ## Release contents and maintainer staging
 
-Published plugin releases bundle the pinned setup program and 0.3.1 wheel under
+Published plugin releases bundle the pinned setup program and 0.4.0 wheel under
 `vendor/`, so the normal plugin clone is usable without an extra download step.
 Maintainers stage the two exact reviewed inputs before committing a release:
 
 ```sh
 python3 scripts/stage_vendor.py \
-  --wheel /path/to/omarchy_community_knowledge_tools-0.3.1-py3-none-any.whl \
+  --wheel /path/to/omarchy_community_knowledge_tools-0.4.0-py3-none-any.whl \
   --setup /path/to/setup_companion.py \
   --destination /path/to/export/vendor
 ```

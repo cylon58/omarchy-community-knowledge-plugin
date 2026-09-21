@@ -38,7 +38,7 @@ class CompanionTests(unittest.TestCase):
         (self.plugin / "bin").mkdir(parents=True)
         (self.plugin / "vendor").mkdir()
         self.script = self.plugin / "vendor" / "omarchy-knowledge-setup.py"
-        self.wheel = self.plugin / "vendor" / "omarchy_community_knowledge_tools-0.3.1-py3-none-any.whl"
+        self.wheel = self.plugin / "vendor" / "omarchy_community_knowledge_tools-0.4.0-py3-none-any.whl"
         self.script.write_text("# setup\n", encoding="utf-8")
         self.wheel.write_bytes(b"wheel")
         self.home = self.root / "home"
@@ -137,7 +137,7 @@ class CompanionTests(unittest.TestCase):
         ])
         self.assertEqual(runner.calls[0][1], 1800)
 
-    def test_refresh_uses_installed_launcher_and_sync_only(self):
+    def test_refresh_updates_both_knowledge_and_plugins(self):
         launcher = self.home / ".local/bin/omarchy-knowledge"
         launcher.write_text("launcher", encoding="utf-8")
         runner = FakeRunner([self.completed([], stdout='{"count": 4}\n')])
@@ -147,7 +147,7 @@ class CompanionTests(unittest.TestCase):
         )
 
         self.assertTrue(result["ok"])
-        self.assertEqual(runner.calls[0][0], [str(launcher), "sync"])
+        self.assertEqual(runner.calls[0][0], [str(launcher), "sync", "--plugins"])
 
     def test_missing_bundle_and_failed_command_are_actionable(self):
         self.wheel.unlink()

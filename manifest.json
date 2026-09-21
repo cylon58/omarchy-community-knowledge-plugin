@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "io.github.cylon58.omarchy-knowledge",
   "name": "Community Knowledge",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "author": "cylon58",
   "description": "Connect your agent to community-reported Omarchy fixes and observations",
   "kinds": [

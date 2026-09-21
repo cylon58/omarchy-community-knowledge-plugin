@@ -187,7 +187,7 @@ def plan(wheel: Path, *, agent="codex", home: Path, prefix: Path, detect_command
         f"Install reviewed wheel with pip: {Path(wheel).absolute()}",
         f"Create owned launcher: {paths['launcher']}",
         f"Install two {AGENT_LABELS[agent]} skills under: {Path(home).absolute() / AGENT_SKILL_PATHS[agent]}",
-        f"Attempt initial public knowledge refresh into: {paths['cache']}",
+        f"Attempt initial public knowledge refresh and plugin catalog refresh into: {paths['cache']}",
         f"Record owned setup paths in: {paths['receipt']}",
     ]
     return {"mode": "dry-run", "actions": actions, "skills": skills}
@@ -349,7 +349,7 @@ def install(wheel: Path, *, agent="codex", home: Path, prefix: Path, command=_de
     refresh_error = None
     try:
         _check_parent(paths["launcher"].parent, create=False)
-        command([paths["launcher"], "sync", "--cache", str(paths["cache"])])
+        command([paths["launcher"], "sync", "--plugins", "--cache", str(paths["cache"])])
     except Exception as error:
         refresh = "pending"
         refresh_error = str(error)
@@ -489,7 +489,7 @@ def main(argv=None) -> int:
         else:
             print("Installation is already complete; no changes were made.")
         if result["refresh"] == "pending":
-            print("Knowledge refresh is pending; the installed tools remain usable with any prior validated cache.")
+            print("Knowledge or plugin refresh is pending; installed tools remain usable with prior cached data.")
     else:
         print("Removal result: " + result["status"])
     return 0
