@@ -38,7 +38,7 @@ class CompanionTests(unittest.TestCase):
         (self.plugin / "bin").mkdir(parents=True)
         (self.plugin / "vendor").mkdir()
         self.script = self.plugin / "vendor" / "omarchy-knowledge-setup.py"
-        self.wheel = self.plugin / "vendor" / "omarchy_community_knowledge_tools-0.4.0-py3-none-any.whl"
+        self.wheel = self.plugin / "vendor" / "omarchy_community_knowledge_tools-0.4.1-py3-none-any.whl"
         self.script.write_text("# setup\n", encoding="utf-8")
         self.wheel.write_bytes(b"wheel")
         self.home = self.root / "home"

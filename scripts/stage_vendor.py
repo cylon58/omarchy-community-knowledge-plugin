@@ -7,7 +7,7 @@ from pathlib import Path
 import shutil
 
 
-WHEEL_NAME = "omarchy_community_knowledge_tools-0.4.0-py3-none-any.whl"
+WHEEL_NAME = "omarchy_community_knowledge_tools-0.4.1-py3-none-any.whl"
 
 
 def stage(wheel: Path, setup: Path, destination: Path):

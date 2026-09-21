@@ -13,7 +13,7 @@ import tempfile
 
 ACTIONS = {"status", "setup", "repair", "refresh", "remove"}
 SUPPORTED_AGENTS = {"codex", "claude", "opencode", "gemini", "agy"}
-WHEEL_NAME = "omarchy_community_knowledge_tools-0.4.0-py3-none-any.whl"
+WHEEL_NAME = "omarchy_community_knowledge_tools-0.4.1-py3-none-any.whl"
 SETUP_NAME = "omarchy-knowledge-setup.py"
 OUTPUT_LIMIT = 16 * 1024
 
