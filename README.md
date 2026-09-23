@@ -1,5 +1,23 @@
 # Omarchy Community Knowledge
 
+## One project, three repositories
+
+| Repository | What belongs here | Who starts here |
+| --- | --- | --- |
+| [Plugin](https://github.com/cylon58/omarchy-community-knowledge-plugin) | Omarchy bar interface and a bundled tools release | People installing or updating through Omarchy |
+| [Tools](https://github.com/cylon58/omarchy-community-knowledge-tools) | Python CLI, search, validation, agent skills, and setup | Code contributors and standalone users |
+| [Knowledge](https://github.com/cylon58/omarchy-community-knowledge) | Shared observations, changes, results, and evidence | People contributing or browsing community experience |
+
+Install the plugin once; it supplies the tools, which read the shared knowledge.
+You do not need to clone or install all three repositories.
+
+The plugin follows Omarchy's plugin packaging and update flow. The tools also work
+without the bar interface. Keeping records separate lets people contribute
+knowledge without changing executable code, and preserves the data's CC BY 4.0
+license alongside the code's MIT license. These are parts of one project.
+
+For maintenance, use the [release guide](https://github.com/cylon58/omarchy-community-knowledge-plugin/blob/main/MAINTAINING.md).
+
 ![Omarchy Community Knowledge preview](preview.png)
 
 A small Omarchy Quattro bar plugin for setting up and maintaining the local
@@ -131,8 +149,13 @@ Maintainers stage the two exact reviewed inputs before committing a release:
 python3 scripts/stage_vendor.py \
   --wheel /path/to/omarchy_community_knowledge_tools-0.4.1-py3-none-any.whl \
   --setup /path/to/setup_companion.py \
+  --toolkit-revision FULL_PUBLISHED_TOOLS_COMMIT \
   --destination /path/to/export/vendor
 ```
+
+Replace the commit placeholder with the full 40-character published tools SHA.
+Staging generates `RELEASE.json` and `SHA256SUMS` from the copied artifacts.
+See [Maintaining Community Knowledge](MAINTAINING.md) for the complete handoff.
 
 Then run:
 

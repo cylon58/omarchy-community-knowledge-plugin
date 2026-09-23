@@ -1,7 +1,7 @@
 {
   "toolkit_repository": "cylon58/omarchy-community-knowledge-tools",
-  "toolkit_revision": "d8a0fda6ac1e9e522ba75ff98a6a1ca271e76507",
-  "version": "0.4.0",
-  "wheel_sha256": "d3e34de940b41fc0a0925d1fcdb2ed7f6fa28ce07820283e0bf49c4bd53c7d41",
+  "toolkit_revision": "6e58c4cc44eed8a8a9e53529d6235e04d8de55bb",
+  "version": "0.4.1",
+  "wheel_sha256": "311025d310fef881fdd601cd7cfd14a680d32e9c7a6674ba8339526365546a63",
   "setup_sha256": "c438f7ee99bf3461ef0ab6bd2e1a55711ff3064463662d0293f5e94a00132291"
 }
