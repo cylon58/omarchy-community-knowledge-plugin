@@ -1,37 +1,58 @@
 # Omarchy Community Knowledge
 
-## One project, three repositories
+Omarchy Community Knowledge is a shared knowledge base of what people have fixed,
+changed, and built to make their Omarchy systems work. It helps your AI agent reuse
+other users' hardware workarounds, fixes that haven't shipped with Omarchy,
+configuration changes, and plugins built to solve particular problems.
+Before spending time and tokens investigating from scratch or building something
+new, your agent can check for relevant community experience.
 
-| Repository | What belongs here | Who starts here |
-| --- | --- | --- |
-| [Plugin](https://github.com/cylon58/omarchy-community-knowledge-plugin) | Omarchy bar interface and a bundled tools release | People installing or updating through Omarchy |
-| [Tools](https://github.com/cylon58/omarchy-community-knowledge-tools) | Python CLI, search, validation, agent skills, and setup | Code contributors and standalone users |
-| [Knowledge](https://github.com/cylon58/omarchy-community-knowledge) | Shared observations, changes, results, and evidence | People contributing or browsing community experience |
+The **companion helper is a small program on your computer**. It keeps a validated
+local copy of the shared knowledge and a separate index of marketplace plugins.
+It searches these locally and returns a short list to your agent, so the agent
+can read the relevant evidence without loading the entire collection into its
+conversation. This is designed to reduce token use as well as repeated work.
 
-Install the plugin once; it supplies the tools, which read the shared knowledge.
-You do not need to clone or install all three repositories.
+## How it helps
 
-The plugin follows Omarchy's plugin packaging and update flow. The tools also work
-without the bar interface. Keeping records separate lets people contribute
-knowledge without changing executable code, and preserves the data's CC BY 4.0
-license alongside the code's MIT license. These are parts of one project.
+For example, if a dock stops waking a display, your agent can look for reports
+about that hardware and symptom, inspect what others changed and whether it
+worked, and check whether their solution applies to your system. If someone built
+a plugin for the problem, the agent can investigate that existing work before
+proposing a new one. These are examples of the intended workflow; results depend
+on what the community has contributed.
 
-For maintenance, use the [release guide](https://github.com/cylon58/omarchy-community-knowledge-plugin/blob/main/MAINTAINING.md).
+The knowledge includes failures, limitations, and later corrections as well as
+successful fixes. After working through your own problem, you can approve a
+cleaned-up contribution so the next person can benefit too.
+
+## Small searches, less context to read
+
+- **Cache locally:** the helper downloads community records and keeps a local
+  marketplace index. Your search terms stay on your machine.
+- **Find a shortlist first:** local search ranks matches and returns five results
+  by default. Plain-text knowledge search shows case IDs, titles, and evidence
+  warnings; plugin search returns compact listings.
+- **Read details when needed:** the agent opens a selected case with
+  `show CASE_ID --related` to inspect its changes, results, failures, and corrections.
+  It can request a plugin's full details separately.
+- **Use ordinary code for retrieval:** SQLite full-text search does the ranking;
+  searching requires no model call, embedding service, or project API key.
+  Your agent still uses tokens to reason about the results and read the details.
+
+The saving comes from keeping the collection outside the agent's context and
+retrieving relevant evidence in stages. Actual token use depends on the agent,
+query, and amount of evidence it reads; we do not claim a measured percentage.
+
+Knowledge search attempts a refresh when its saved copy is at least a day old.
+Plugin discovery checks for catalog updates on each normal search. Both support
+explicit offline use and retain their last good cache if a refresh fails.
 
 ![Omarchy Community Knowledge preview](preview.png)
 
-A small Omarchy Quattro bar plugin for setting up and maintaining the local
-Community Knowledge companion. The companion helps supported coding agents
-consult community-reported fixes, observations, and optional improvements. It
-does not run a service, poll in the background, repair automatically, or share
-anything by itself.
-
-The bundled research skill checks installed plugins and a local marketplace index
-before proposing a new plugin, suggests relevant existing options with creator
-credit and repository links, and explains what a custom build would still need
-to provide. Each normal plugin search checks for catalog updates. Network failures
-keep the last good list with a warning; explicit offline search is supported.
-The Refresh action updates both community knowledge and the plugin index.
+This repository provides the Omarchy Quattro bar plugin that installs and manages
+the companion helper. Choose **Connect my agent** to connect your supported agent.
+The helper does not automatically apply fixes or publish your information.
 
 ## Requirements
 
@@ -172,3 +193,21 @@ License; its notice is preserved in `THIRD_PARTY_NOTICES.md`.
 ## License
 
 MIT. See `LICENSE`.
+
+## One project, three repositories
+
+| Repository | What belongs here | Who starts here |
+| --- | --- | --- |
+| [Plugin](https://github.com/cylon58/omarchy-community-knowledge-plugin) | Omarchy bar interface and a bundled tools release | People installing or updating through Omarchy |
+| [Tools](https://github.com/cylon58/omarchy-community-knowledge-tools) | Python CLI, search, validation, agent skills, and setup | Code contributors and standalone users |
+| [Knowledge](https://github.com/cylon58/omarchy-community-knowledge) | Shared observations, changes, results, and evidence | People contributing or browsing community experience |
+
+Install the plugin once; it supplies the tools, which read the shared knowledge.
+You do not need to clone or install all three repositories.
+
+The plugin follows Omarchy's plugin packaging and update flow. The tools also work
+without the bar interface. Keeping records separate lets people contribute
+knowledge without changing executable code, and preserves the data's CC BY 4.0
+license alongside the code's MIT license. These are parts of one project.
+
+For maintenance, use the [release guide](https://github.com/cylon58/omarchy-community-knowledge-plugin/blob/main/MAINTAINING.md).
